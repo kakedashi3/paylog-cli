@@ -1,0 +1,35 @@
+{
+  "name": "paylog",
+  "version": "0.1.0",
+  "description": "CLI tool to view your MPP spending history powered by paylog.dev",
+  "type": "module",
+  "bin": {
+    "paylog": "./bin/paylog.js"
+  },
+  "files": [
+    "bin/",
+    "src/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx bin/paylog.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mpp",
+    "tempo",
+    "usdc",
+    "payments",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
