@@ -1,5 +1,5 @@
 {
-  "name": "@kakedashi3/paylog",
+  "name": "@kakedashi/paylog",
   "version": "0.1.0",
   "description": "CLI tool to view your MPP spending history powered by paylog.dev",
   "type": "module",
