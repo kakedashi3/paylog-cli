@@ -1,6 +1,6 @@
 {
   "name": "@kakedashi/paylog",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI tool to view your MPP spending history powered by paylog.dev",
   "type": "module",
   "bin": {
