@@ -1,3 +1,5 @@
+import { execSync } from 'node:child_process'
+
 const BASE_URL = 'https://paylog.dev'
 
 export interface ServiceSummary {
@@ -34,18 +36,22 @@ export async function fetchReport(
   if (resolve) params.set('resolve', 'true')
 
   const url = `${BASE_URL}/api/v1/report?${params}`
-  const res = await fetch(url)
 
-  if (res.status === 402) {
-    throw new Error(
-      'Payment required (402). This API costs $0.001 USDC per call.\n' +
-      'Make sure your Tempo wallet is funded and the mppx client is configured.',
-    )
-  }
-  if (!res.ok) {
-    const body = await res.text()
-    throw new Error(`API error ${res.status}: ${body}`)
+  let output: string
+  try {
+    output = execSync(`tempo request -t -L -X GET "${url}"`, {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    })
+  } catch (err: any) {
+    if (err.code === 'ENOENT') {
+      throw new Error(
+        'Tempo CLI not found. Install: curl -L https://tempo.xyz/install | bash',
+      )
+    }
+    const combined: string = (err.stdout ?? '') + (err.stderr ?? '')
+    throw new Error(`tempo request failed:\n${combined || err.message}`)
   }
 
-  return res.json() as Promise<ReportResponse>
+  return JSON.parse(output) as ReportResponse
 }
