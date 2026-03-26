@@ -1,8 +1,7 @@
 {
   "name": "@kakedashi/paylog",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "CLI tool to view your MPP spending history powered by paylog.dev",
-  "type": "module",
   "bin": {
     "paylog": "./bin/paylog.js"
   },
@@ -11,7 +10,7 @@
     "src/"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x bin/paylog.js",
     "dev": "tsx bin/paylog.ts",
     "prepublishOnly": "npm run build"
   },

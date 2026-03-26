@@ -1,4 +1,7 @@
-import { readLocalHistory } from './history.js';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.enrichLocusPayments = enrichLocusPayments;
+const history_js_1 = require("./history.js");
 // Locus gateway address (all Locus MPP services share this)
 const LOCUS_RECIPIENT = '0x060b0fb0be9d90557577b3aee480711067149ff0';
 // ---------------------------------------------------------------------------
@@ -42,12 +45,12 @@ function dateToNoonUtc(date) {
 // ---------------------------------------------------------------------------
 // Match history entries to Locus payments
 // ---------------------------------------------------------------------------
-export function enrichLocusPayments(report) {
+function enrichLocusPayments(report) {
     const locusService = report.by_service.find(s => s.name.toLowerCase().includes('locus') || s.url.includes('paywithlocus'));
     if (!locusService || locusService.txns === 0) {
         return { total_usd: 0, txns: 0, matched: [], unmatched_txns: 0, unmatched_usd: 0 };
     }
-    const history = readLocalHistory();
+    const history = (0, history_js_1.readLocalHistory)();
     const stubs = extractLocusTxStubs(report);
     const matched = [];
     let matchedTxns = 0;

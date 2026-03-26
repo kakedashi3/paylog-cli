@@ -1,6 +1,9 @@
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.readLocalHistory = readLocalHistory;
+const node_fs_1 = require("node:fs");
+const node_os_1 = require("node:os");
+const node_path_1 = require("node:path");
 const LOCUS_PATTERN = /paywithlocus\.com/;
 // ---------------------------------------------------------------------------
 // zsh_history  format: ": 1742817152:0;command"
@@ -87,10 +90,10 @@ function urlToService(url) {
     }
 }
 function tryRead(path) {
-    if (!existsSync(path))
+    if (!(0, node_fs_1.existsSync)(path))
         return null;
     try {
-        return readFileSync(path, 'utf8');
+        return (0, node_fs_1.readFileSync)(path, 'utf8');
     }
     catch {
         return null;
@@ -99,27 +102,27 @@ function tryRead(path) {
 // ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
-export function readLocalHistory() {
-    const home = homedir();
+function readLocalHistory() {
+    const home = (0, node_os_1.homedir)();
     const entries = [];
     // zsh
-    const zsh = tryRead(join(home, '.zsh_history'));
+    const zsh = tryRead((0, node_path_1.join)(home, '.zsh_history'));
     if (zsh)
         entries.push(...parseZshHistory(zsh));
     // bash
-    const bash = tryRead(join(home, '.bash_history'));
+    const bash = tryRead((0, node_path_1.join)(home, '.bash_history'));
     if (bash)
         entries.push(...parseBashHistory(bash));
     // fish
-    const fish = tryRead(join(home, '.local', 'share', 'fish', 'fish_history'));
+    const fish = tryRead((0, node_path_1.join)(home, '.local', 'share', 'fish', 'fish_history'));
     if (fish)
         entries.push(...parseFishHistory(fish));
     // Claude Code chat.jsonl — scan ~/.claude/projects/*/chat.jsonl
-    const claudeProjects = join(home, '.claude', 'projects');
-    if (existsSync(claudeProjects)) {
+    const claudeProjects = (0, node_path_1.join)(home, '.claude', 'projects');
+    if ((0, node_fs_1.existsSync)(claudeProjects)) {
         try {
-            for (const projectDir of readdirSync(claudeProjects)) {
-                const jsonlPath = join(claudeProjects, projectDir, 'chat.jsonl');
+            for (const projectDir of (0, node_fs_1.readdirSync)(claudeProjects)) {
+                const jsonlPath = (0, node_path_1.join)(claudeProjects, projectDir, 'chat.jsonl');
                 const content = tryRead(jsonlPath);
                 if (content)
                     entries.push(...parseClaudeJsonl(content));

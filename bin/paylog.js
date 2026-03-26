@@ -1,14 +1,16 @@
 #!/usr/bin/env node
-import { Command } from 'commander';
-import { existsSync } from 'node:fs';
-import { spawnSync } from 'node:child_process';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
-import { resolveWallet } from '../src/wallet.js';
-import { fetchReport } from '../src/api.js';
-import { enrichLocusPayments } from '../src/enrich.js';
-import { printReport, printWallet, printError } from '../src/format.js';
-const program = new Command();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const commander_1 = require("commander");
+const node_fs_1 = require("node:fs");
+const node_child_process_1 = require("node:child_process");
+const node_os_1 = require("node:os");
+const node_path_1 = require("node:path");
+const wallet_js_1 = require("../src/wallet.js");
+const api_js_1 = require("../src/api.js");
+const enrich_js_1 = require("../src/enrich.js");
+const format_js_1 = require("../src/format.js");
+const program = new commander_1.Command();
 program
     .name('paylog')
     .description('View your MPP spending history from paylog.dev')
@@ -28,14 +30,14 @@ program
     // Resolve wallet
     let wallet;
     try {
-        wallet = resolveWallet(opts.wallet);
+        wallet = (0, wallet_js_1.resolveWallet)(opts.wallet);
     }
     catch (err) {
-        printError(err.message);
+        (0, format_js_1.printError)(err.message);
         process.exit(1);
     }
     if (!wallet) {
-        printError('No wallet found. Provide one via --wallet, or set up a Tempo/mppx/agentcash wallet.');
+        (0, format_js_1.printError)('No wallet found. Provide one via --wallet, or set up a Tempo/mppx/agentcash wallet.');
         process.exit(1);
     }
     // Resolve date range
@@ -47,7 +49,7 @@ program
     else {
         const days = parseInt(opts.days, 10);
         if (isNaN(days) || days < 1) {
-            printError('--days must be a positive integer');
+            (0, format_js_1.printError)('--days must be a positive integer');
             process.exit(1);
         }
         const d = new Date();
@@ -57,15 +59,15 @@ program
     // Fetch report
     let report;
     try {
-        report = await fetchReport(wallet, fromDate, toDate, opts.enrich);
+        report = await (0, api_js_1.fetchReport)(wallet, fromDate, toDate, opts.enrich);
     }
     catch (err) {
-        printError(err.message);
+        (0, format_js_1.printError)(err.message);
         process.exit(1);
     }
     // Optionally enrich Locus payments
-    const enrich = opts.enrich ? enrichLocusPayments(report) : undefined;
-    printReport(report, enrich);
+    const enrich = opts.enrich ? (0, enrich_js_1.enrichLocusPayments)(report) : undefined;
+    (0, format_js_1.printReport)(report, enrich);
 });
 // ---------------------------------------------------------------------------
 // paylog wallet
@@ -75,36 +77,36 @@ program
     .description('Show the detected wallet address')
     .option('--wallet <address>', 'Wallet address (overrides auto-detection)')
     .action((opts) => {
-    const home = homedir();
+    const home = (0, node_os_1.homedir)();
     const sources = [
-        { path: join(home, '.agentcash', 'wallet.json'), label: '~/.agentcash/wallet.json' },
-        { path: join(home, '.mppx', 'wallet.json'), label: '~/.mppx/wallet.json' },
-        { path: join(home, '.tempo', 'wallet', 'keys.toml'), label: '~/.tempo/wallet/keys.toml' },
+        { path: (0, node_path_1.join)(home, '.agentcash', 'wallet.json'), label: '~/.agentcash/wallet.json' },
+        { path: (0, node_path_1.join)(home, '.mppx', 'wallet.json'), label: '~/.mppx/wallet.json' },
+        { path: (0, node_path_1.join)(home, '.tempo', 'wallet', 'keys.toml'), label: '~/.tempo/wallet/keys.toml' },
     ];
     if (opts.wallet) {
         try {
-            const addr = resolveWallet(opts.wallet);
-            printWallet(addr, '--wallet option');
+            const addr = (0, wallet_js_1.resolveWallet)(opts.wallet);
+            (0, format_js_1.printWallet)(addr, '--wallet option');
         }
         catch (err) {
-            printError(err.message);
+            (0, format_js_1.printError)(err.message);
             process.exit(1);
         }
         return;
     }
     let foundSource = 'auto-detected';
     for (const src of sources) {
-        if (existsSync(src.path)) {
+        if ((0, node_fs_1.existsSync)(src.path)) {
             foundSource = src.label;
             break;
         }
     }
-    const wallet = resolveWallet();
+    const wallet = (0, wallet_js_1.resolveWallet)();
     if (wallet) {
-        printWallet(wallet, foundSource);
+        (0, format_js_1.printWallet)(wallet, foundSource);
         return;
     }
-    printError('No wallet found. Try:\n' +
+    (0, format_js_1.printError)('No wallet found. Try:\n' +
         '  ~/.agentcash/wallet.json   { "address": "0x..." }\n' +
         '  ~/.mppx/wallet.json        { "address": "0x..." }\n' +
         '  ~/.tempo/wallet/keys.toml  wallet_address = "0x..."\n' +
@@ -118,9 +120,9 @@ program
     .command('balance')
     .description('Show Tempo wallet balance (requires tempo CLI)')
     .action(() => {
-    const result = spawnSync('tempo', ['wallet', 'whoami'], { stdio: 'inherit' });
+    const result = (0, node_child_process_1.spawnSync)('tempo', ['wallet', 'whoami'], { stdio: 'inherit' });
     if (result.error) {
-        printError('Could not run `tempo wallet whoami`. Is the tempo CLI installed?');
+        (0, format_js_1.printError)('Could not run `tempo wallet whoami`. Is the tempo CLI installed?');
         process.exit(1);
     }
     process.exit(result.status ?? 0);
