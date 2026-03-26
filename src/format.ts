@@ -21,7 +21,7 @@ export function printReport(
   report: ReportResponse,
   enrich?: EnrichResult,
 ): void {
-  const { wallet, period, total_spent_usd, service_spent_usd, by_service,
+  const { wallet, period, total_spent_usd, by_service,
           session_deposits, network_fees, other } = report
 
   console.log()
@@ -33,7 +33,7 @@ export function printReport(
   // Total summary
   console.log(`${bold('Total spent')}     ${bold(usd(total_spent_usd))}`)
   if (session_deposits.txns > 0) {
-    console.log(`  Session deposits ${usd(session_deposits.total_usd).padStart(8)}  ${dim(`(${session_deposits.txns} txns — ${session_deposits.note})`)}`)
+    console.log(`  Session deposits ${usd(session_deposits.deposited_usd).padStart(8)}  ${dim(`(${session_deposits.txns} txns — ${session_deposits.note})`)}`)
   }
   if (network_fees.txns > 0) {
     console.log(`  Network fees     ${usd(network_fees.total_usd).padStart(8)}  ${dim(`(${network_fees.txns} txns)`)}`)

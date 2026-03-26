@@ -17,9 +17,8 @@ export interface ReportResponse {
   wallet: string
   period: { from: string; to: string }
   total_spent_usd: number
-  service_spent_usd: number
   by_service: ServiceSummary[]
-  session_deposits: { total_usd: number; txns: number; note: string }
+  session_deposits: { deposited_usd: number; txns: number; note: string }
   network_fees: { total_usd: number; txns: number }
   other: { total_usd: number; txns: number }
   daily_breakdown: DailyBreakdown[]
