@@ -5,9 +5,9 @@ import { spawnSync } from 'node:child_process'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { resolveWallet } from '../src/wallet.js'
-import { fetchReport } from '../src/api.js'
+import { fetchReport, fetchInsights } from '../src/api.js'
 import { enrichLocusPayments } from '../src/enrich.js'
-import { printReport, printWallet, printError } from '../src/format.js'
+import { printReport, printInsights, printWallet, printError } from '../src/format.js'
 
 const program = new Command()
 
@@ -72,6 +72,56 @@ program
     const enrich = (opts.enrich as boolean) ? enrichLocusPayments(report) : undefined
 
     printReport(report, enrich)
+  })
+
+// ---------------------------------------------------------------------------
+// paylog insights
+// ---------------------------------------------------------------------------
+program
+  .command('insights')
+  .description('Show spending insights and cost optimization tips for your Tempo wallet')
+  .option('-d, --days <n>', 'Number of past days to include', '7')
+  .option('--from <date>', 'Start date (YYYY-MM-DD)')
+  .option('--wallet <address>', 'Wallet address (overrides auto-detection)')
+  .action(async (opts) => {
+    let wallet: string | null
+    try {
+      wallet = resolveWallet(opts.wallet as string | undefined)
+    } catch (err: unknown) {
+      printError((err as Error).message)
+      process.exit(1)
+    }
+    if (!wallet) {
+      printError(
+        'No wallet found. Provide one via --wallet, or set up a Tempo/mppx/agentcash wallet.',
+      )
+      process.exit(1)
+    }
+
+    const toDate = new Date().toISOString().slice(0, 10)
+    let fromDate: string
+    if (opts.from) {
+      fromDate = opts.from as string
+    } else {
+      const days = parseInt(opts.days as string, 10)
+      if (isNaN(days) || days < 1) {
+        printError('--days must be a positive integer')
+        process.exit(1)
+      }
+      const d = new Date()
+      d.setUTCDate(d.getUTCDate() - days)
+      fromDate = d.toISOString().slice(0, 10)
+    }
+
+    let response
+    try {
+      response = await fetchInsights(wallet, fromDate, toDate)
+    } catch (err: unknown) {
+      printError((err as Error).message)
+      process.exit(1)
+    }
+
+    printInsights(response)
   })
 
 // ---------------------------------------------------------------------------

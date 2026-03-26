@@ -70,6 +70,53 @@ program
     (0, format_js_1.printReport)(report, enrich);
 });
 // ---------------------------------------------------------------------------
+// paylog insights
+// ---------------------------------------------------------------------------
+program
+    .command('insights')
+    .description('Show spending insights and cost optimization tips for your Tempo wallet')
+    .option('-d, --days <n>', 'Number of past days to include', '7')
+    .option('--from <date>', 'Start date (YYYY-MM-DD)')
+    .option('--wallet <address>', 'Wallet address (overrides auto-detection)')
+    .action(async (opts) => {
+    let wallet;
+    try {
+        wallet = (0, wallet_js_1.resolveWallet)(opts.wallet);
+    }
+    catch (err) {
+        (0, format_js_1.printError)(err.message);
+        process.exit(1);
+    }
+    if (!wallet) {
+        (0, format_js_1.printError)('No wallet found. Provide one via --wallet, or set up a Tempo/mppx/agentcash wallet.');
+        process.exit(1);
+    }
+    const toDate = new Date().toISOString().slice(0, 10);
+    let fromDate;
+    if (opts.from) {
+        fromDate = opts.from;
+    }
+    else {
+        const days = parseInt(opts.days, 10);
+        if (isNaN(days) || days < 1) {
+            (0, format_js_1.printError)('--days must be a positive integer');
+            process.exit(1);
+        }
+        const d = new Date();
+        d.setUTCDate(d.getUTCDate() - days);
+        fromDate = d.toISOString().slice(0, 10);
+    }
+    let response;
+    try {
+        response = await (0, api_js_1.fetchInsights)(wallet, fromDate, toDate);
+    }
+    catch (err) {
+        (0, format_js_1.printError)(err.message);
+        process.exit(1);
+    }
+    (0, format_js_1.printInsights)(response);
+});
+// ---------------------------------------------------------------------------
 // paylog wallet
 // ---------------------------------------------------------------------------
 program

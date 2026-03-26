@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.printReport = printReport;
+exports.printInsights = printInsights;
 exports.printWallet = printWallet;
 exports.printError = printError;
 // ---------------------------------------------------------------------------
@@ -78,6 +79,41 @@ function printEnrichBreakdown(enrich) {
         console.log(dim(`      │ ? 未照合              ${usd(enrich.unmatched_usd).padStart(8)}  ${enrich.unmatched_txns}件`));
     }
     console.log(dim(`      └─ ※ ローカル履歴との照合による推定 ──────────────`));
+}
+// ---------------------------------------------------------------------------
+// Insights display
+// ---------------------------------------------------------------------------
+function printInsights(response) {
+    const { period, insights } = response;
+    console.log();
+    console.log(`\ud83d\udca1 ${bold(`Insights (${period.from} \u301c ${period.to})`)}`);
+    console.log();
+    if (insights.length === 0) {
+        console.log(dim('  No insights available for this period.'));
+        console.log();
+        return;
+    }
+    for (const insight of insights) {
+        if (insight.type === 'cost_optimization') {
+            const i = insight;
+            const estAlt = i.alternative_price * i.txns;
+            console.log(`\ud83d\udcb0 ${bold('Cost Optimization')}`);
+            console.log(`  ${cyan(i.service)} \u2192 ${cyan(i.alternative)} \u3067 ${green(usd(i.potential_saving))} \u7bc0\u7d04\u53ef\u80fd`);
+            console.log(dim(`  (${usd(i.current_spend)} \u2192 ${usd(estAlt)} estimated)`));
+            console.log();
+        }
+        else if (insight.type === 'usage_pattern') {
+            console.log(`\ud83d\udcca ${bold('Usage Pattern')}`);
+            console.log(`  ${insight.message}`);
+            console.log();
+        }
+        else if (insight.type === 'top_service') {
+            const i = insight;
+            console.log(`\ud83c\udfc6 ${bold('Top Service')}`);
+            console.log(`  ${cyan(i.service)}: ${i.txns}\u56de / ${usd(i.spend)}`);
+            console.log();
+        }
+    }
 }
 // ---------------------------------------------------------------------------
 // Wallet display

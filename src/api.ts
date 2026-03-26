@@ -26,6 +26,65 @@ export interface ReportResponse {
   daily_breakdown: DailyBreakdown[]
 }
 
+export interface CostOptimizationInsight {
+  type: 'cost_optimization'
+  service: string
+  current_spend: number
+  txns: number
+  message: string
+  alternative: string
+  alternative_price: number
+  potential_saving: number
+}
+
+export interface UsagePatternInsight {
+  type: 'usage_pattern'
+  message: string
+}
+
+export interface TopServiceInsight {
+  type: 'top_service'
+  service: string
+  spend: number
+  txns: number
+  message: string
+}
+
+export type Insight = CostOptimizationInsight | UsagePatternInsight | TopServiceInsight
+
+export interface InsightsResponse {
+  wallet: string
+  period: { from: string; to: string }
+  insights: Insight[]
+}
+
+export async function fetchInsights(
+  wallet: string,
+  from: string,
+  to: string,
+): Promise<InsightsResponse> {
+  const params = new URLSearchParams({ wallet, from, to })
+  const url = `${BASE_URL}/api/v1/insights?${params}`
+
+  let output: string
+  try {
+    output = execSync(`tempo request -t -L -X GET "${url}"`, {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    })
+  } catch (err: any) {
+    if (err.code === 'ENOENT') {
+      throw new Error(
+        'Tempo CLI not found. Install: curl -L https://tempo.xyz/install | bash',
+      )
+    }
+    const combined: string = (err.stdout ?? '') + (err.stderr ?? '')
+    throw new Error(`tempo request failed:\n${combined || err.message}`)
+  }
+
+  return JSON.parse(output) as InsightsResponse
+}
+
 export async function fetchReport(
   wallet: string,
   from: string,
