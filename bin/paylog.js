@@ -37,7 +37,7 @@ program
         process.exit(1);
     }
     if (!wallet) {
-        (0, format_js_1.printError)('No wallet found. Provide one via --wallet, or set up a Tempo/mppx/agentcash wallet.');
+        (0, format_js_1.printError)('No wallet found. Provide one via --wallet, or run: curl -fsSL https://tempo.xyz/install | bash');
         process.exit(1);
     }
     // Resolve date range
@@ -88,7 +88,7 @@ program
         process.exit(1);
     }
     if (!wallet) {
-        (0, format_js_1.printError)('No wallet found. Provide one via --wallet, or set up a Tempo/mppx/agentcash wallet.');
+        (0, format_js_1.printError)('No wallet found. Provide one via --wallet, or run: curl -fsSL https://tempo.xyz/install | bash');
         process.exit(1);
     }
     const toDate = new Date().toISOString().slice(0, 10);
@@ -126,9 +126,9 @@ program
     .action((opts) => {
     const home = (0, node_os_1.homedir)();
     const sources = [
+        { path: (0, node_path_1.join)(home, '.tempo', 'wallet', 'keys.toml'), label: '~/.tempo/wallet/keys.toml' },
         { path: (0, node_path_1.join)(home, '.agentcash', 'wallet.json'), label: '~/.agentcash/wallet.json' },
         { path: (0, node_path_1.join)(home, '.mppx', 'wallet.json'), label: '~/.mppx/wallet.json' },
-        { path: (0, node_path_1.join)(home, '.tempo', 'wallet', 'keys.toml'), label: '~/.tempo/wallet/keys.toml' },
     ];
     if (opts.wallet) {
         try {
@@ -154,9 +154,10 @@ program
         return;
     }
     (0, format_js_1.printError)('No wallet found. Try:\n' +
+        '  Install Tempo:  curl -fsSL https://tempo.xyz/install | bash\n' +
+        '  ~/.tempo/wallet/keys.toml  wallet_address = "0x..."\n' +
         '  ~/.agentcash/wallet.json   { "address": "0x..." }\n' +
         '  ~/.mppx/wallet.json        { "address": "0x..." }\n' +
-        '  ~/.tempo/wallet/keys.toml  wallet_address = "0x..."\n' +
         '  paylog wallet --wallet 0x...');
     process.exit(1);
 });

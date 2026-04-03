@@ -1,19 +1,19 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.enrichLocusPayments = enrichLocusPayments;
 const history_js_1 = require("./history.js");
+const locus_pricing_json_1 = __importDefault(require("./locus-pricing.json"));
 // Locus gateway address (all Locus MPP services share this)
 const LOCUS_RECIPIENT = '0x060b0fb0be9d90557577b3aee480711067149ff0';
+const LOCUS_PRICING = locus_pricing_json_1.default;
 // ---------------------------------------------------------------------------
-// Block-time → unix seconds estimate
-// (paylog.dev returns daily_breakdown with date; we approximate block timestamp
-//  from the date. In a future version the API could return block timestamps.)
+// Confidence rules (time-based)
+//  high:   |Δt| ≤ 30s
+//  medium: |Δt| ≤ 60s  AND price within 0.5% of history entry
 // ---------------------------------------------------------------------------
-/** Confidence rules:
- *  high:   |Δt| ≤ 30s
- *  medium: |Δt| ≤ 60s  AND price within 0.5% of history entry (same endpoint cost)
- *  low:    price within 2% but timestamp unknown or >60s
- */
 function calcConfidence(deltaSec, priceMatch) {
     const absDelta = Math.abs(deltaSec);
     if (absDelta <= 30)
@@ -22,11 +22,36 @@ function calcConfidence(deltaSec, priceMatch) {
         return 'medium';
     return null;
 }
+// ---------------------------------------------------------------------------
+// Price-based heuristic using locus-pricing.json
+//  完全一致 (epsilon < 0.000001) → confidence: high
+//  ±10%以内                       → confidence: medium
+//  複数候補は confidence 優先、次に価格差が小さい順にソート
+// ---------------------------------------------------------------------------
+function matchByPrice(amount) {
+    const candidates = [];
+    for (const [name, entry] of Object.entries(LOCUS_PRICING)) {
+        if (entry.price_per_call === null)
+            continue;
+        const price = entry.price_per_call;
+        const diff = Math.abs(price - amount);
+        const relDiff = amount > 0 ? diff / amount : Infinity;
+        if (diff < 0.000001) {
+            candidates.push({ service: name, serviceUrl: entry.url, price, confidence: 'high' });
+        }
+        else if (relDiff <= 0.1) {
+            candidates.push({ service: name, serviceUrl: entry.url, price, confidence: 'medium' });
+        }
+    }
+    return candidates.sort((a, b) => {
+        if (a.confidence !== b.confidence)
+            return a.confidence === 'high' ? -1 : 1;
+        return Math.abs(a.price - amount) - Math.abs(b.price - amount);
+    });
+}
 function extractLocusTxStubs(report) {
     const stubs = [];
     for (const day of report.daily_breakdown) {
-        // Find "Locus" service in this day's breakdown
-        // The API returns service named "Locus (paywithlocus.com)"
         const locusEntry = day.by_service.find(s => s.name.toLowerCase().includes('locus') || s.url.includes('paywithlocus'));
         if (!locusEntry || locusEntry.txns === 0)
             continue;
@@ -43,7 +68,7 @@ function dateToNoonUtc(date) {
     return Math.floor(new Date(`${date}T12:00:00Z`).getTime() / 1000);
 }
 // ---------------------------------------------------------------------------
-// Match history entries to Locus payments
+// Main enrichment: time-matching → 失敗時に価格ヒューリスティックで補完
 // ---------------------------------------------------------------------------
 function enrichLocusPayments(report) {
     const locusService = report.by_service.find(s => s.name.toLowerCase().includes('locus') || s.url.includes('paywithlocus'));
@@ -58,43 +83,67 @@ function enrichLocusPayments(report) {
         const dayStart = Math.floor(new Date(`${stub.date}T00:00:00Z`).getTime() / 1000);
         const dayEnd = Math.floor(new Date(`${stub.date}T23:59:59Z`).getTime() / 1000);
         const noonApprox = dateToNoonUtc(stub.date);
-        // Filter history entries with known timestamps that fall within this day (±1 day buffer)
+        // 1. 時刻マッチング: このdayのhistoryエントリを探す（±1日バッファ）
         const dayEntries = history.filter(h => h.timestamp > 0 && h.timestamp >= dayStart - 86400 && h.timestamp <= dayEnd + 86400);
-        // Group by service for this day
         const serviceHits = new Map();
         for (const entry of dayEntries) {
-            const key = entry.service;
-            if (!serviceHits.has(key))
-                serviceHits.set(key, []);
-            serviceHits.get(key).push(entry);
+            if (!serviceHits.has(entry.service))
+                serviceHits.set(entry.service, []);
+            serviceHits.get(entry.service).push(entry);
         }
-        // For each history service hit, try to match against stub's txns
         let remainingTxns = stub.txns;
         for (const [service, entries] of serviceHits) {
             if (remainingTxns <= 0)
                 break;
-            // Find the closest-in-time entry
             const closest = entries.reduce((best, e) => {
-                const d = Math.abs(e.timestamp - noonApprox);
-                const bd = Math.abs(best.timestamp - noonApprox);
-                return d < bd ? e : best;
+                return Math.abs(e.timestamp - noonApprox) < Math.abs(best.timestamp - noonApprox) ? e : best;
             });
             const delta = closest.timestamp - noonApprox;
-            // Price match: within 10% (we only have avg, not per-tx price from API)
-            const priceMatch = true; // can't reliably match price from daily avg
-            const confidence = calcConfidence(delta, priceMatch);
+            const confidence = calcConfidence(delta, true);
             if (!confidence)
                 continue;
-            const serviceUrl = new URL(closest.url).hostname;
+            const serviceUrl = (() => {
+                try {
+                    return new URL(closest.url).hostname;
+                }
+                catch {
+                    return closest.url;
+                }
+            })();
+            // 時刻マッチング成功 → 価格候補も付加して matchMethod を記録
+            const priceCandidates = matchByPrice(stub.amount);
+            const priceAlsoMatches = priceCandidates.some(c => c.service === service);
             matched.push({
                 timestamp: closest.timestamp,
                 amount: stub.amount,
                 service,
                 serviceUrl,
                 confidence,
+                matchMethod: priceAlsoMatches ? 'time+price' : 'time',
             });
             matchedTxns++;
             remainingTxns--;
+        }
+        // 2. 時刻マッチング不足分 → 価格ヒューリスティックで補完
+        if (remainingTxns > 0) {
+            const candidates = matchByPrice(stub.amount);
+            if (candidates.length > 0) {
+                const best = candidates[0];
+                const txsToAdd = remainingTxns;
+                for (let i = 0; i < txsToAdd; i++) {
+                    matched.push({
+                        timestamp: 0, // 時刻不明
+                        amount: stub.amount,
+                        service: best.service,
+                        serviceUrl: best.serviceUrl,
+                        confidence: best.confidence,
+                        matchMethod: 'price',
+                        candidates: candidates.length > 1 ? candidates : undefined,
+                    });
+                    matchedTxns++;
+                    remainingTxns--;
+                }
+            }
         }
     }
     const unmatchedTxns = locusService.txns - matchedTxns;

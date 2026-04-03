@@ -40,17 +40,17 @@ function resolveWallet(explicit) {
         return explicit.toLowerCase();
     }
     const home = (0, node_os_1.homedir)();
-    // 1. ~/.agentcash/wallet.json
-    const agentcash = tryReadJson((0, node_path_1.join)(home, '.agentcash', 'wallet.json'), 'address');
-    if (agentcash)
-        return agentcash;
-    // 2. ~/.mppx/wallet.json
-    const mppx = tryReadJson((0, node_path_1.join)(home, '.mppx', 'wallet.json'), 'address');
-    if (mppx)
-        return mppx;
-    // 3. ~/.tempo/wallet/keys.toml
+    // 1. ~/.tempo/wallet/keys.toml（最も普及しているため優先）
     const tempo = tryReadToml((0, node_path_1.join)(home, '.tempo', 'wallet', 'keys.toml'));
     if (tempo)
         return tempo;
+    // 2. ~/.agentcash/wallet.json
+    const agentcash = tryReadJson((0, node_path_1.join)(home, '.agentcash', 'wallet.json'), 'address');
+    if (agentcash)
+        return agentcash;
+    // 3. ~/.mppx/wallet.json
+    const mppx = tryReadJson((0, node_path_1.join)(home, '.mppx', 'wallet.json'), 'address');
+    if (mppx)
+        return mppx;
     return null;
 }
