@@ -36,17 +36,17 @@ export function resolveWallet(explicit?: string): string | null {
 
   const home = homedir()
 
-  // 1. ~/.agentcash/wallet.json
+  // 1. ~/.tempo/wallet/keys.toml（最も普及しているため優先）
+  const tempo = tryReadToml(join(home, '.tempo', 'wallet', 'keys.toml'))
+  if (tempo) return tempo
+
+  // 2. ~/.agentcash/wallet.json
   const agentcash = tryReadJson(join(home, '.agentcash', 'wallet.json'), 'address')
   if (agentcash) return agentcash
 
-  // 2. ~/.mppx/wallet.json
+  // 3. ~/.mppx/wallet.json
   const mppx = tryReadJson(join(home, '.mppx', 'wallet.json'), 'address')
   if (mppx) return mppx
-
-  // 3. ~/.tempo/wallet/keys.toml
-  const tempo = tryReadToml(join(home, '.tempo', 'wallet', 'keys.toml'))
-  if (tempo) return tempo
 
   return null
 }
