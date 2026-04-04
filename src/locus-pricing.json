@@ -1,0 +1,254 @@
+{
+  "Billboard": {
+    "url": "billboard.mpp.paywithlocus.com",
+    "price_per_call": 10.24,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /billboard/post"
+  },
+  "Clado": {
+    "url": "clado.mpp.paywithlocus.com",
+    "price_per_call": 0.303,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /clado/search"
+  },
+  "Brave Search": {
+    "url": "brave.mpp.paywithlocus.com",
+    "price_per_call": 0.035,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /brave/web-search"
+  },
+  "BuiltWith": {
+    "url": "builtwith.mpp.paywithlocus.com",
+    "price_per_call": 0.055,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /builtwith/domain"
+  },
+  "Company Enrichment": {
+    "url": "abstract-company-enrichment.mpp.paywithlocus.com",
+    "price_per_call": 0.006,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /abstract-company-enrichment/lookup"
+  },
+  "CoinGecko": {
+    "url": "coingecko.mpp.paywithlocus.com",
+    "price_per_call": 0.06,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /coingecko/simple-price"
+  },
+  "Deepgram": {
+    "url": "deepgram.mpp.paywithlocus.com",
+    "price_per_call": 0.053,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /deepgram/transcribe"
+  },
+  "Diffbot KG": {
+    "url": "diffbot-kg.mpp.paywithlocus.com",
+    "price_per_call": 1.505,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /diffbot-kg/search"
+  },
+  "Diffbot": {
+    "url": "diffbot.mpp.paywithlocus.com",
+    "price_per_call": 0.0042,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /diffbot/article"
+  },
+  "EDGAR (SEC)": {
+    "url": "edgar.mpp.paywithlocus.com",
+    "price_per_call": 0.008,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /edgar/company-submissions"
+  },
+  "Diffbot NL": {
+    "url": "diffbot-nl.mpp.paywithlocus.com",
+    "price_per_call": 0.0042,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /diffbot-nl/analyze"
+  },
+  "DeepSeek": {
+    "url": "deepseek.mpp.paywithlocus.com",
+    "price_per_call": 0.004126,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /deepseek/chat"
+  },
+  "EDGAR Full-Text Search": {
+    "url": "edgar-search.mpp.paywithlocus.com",
+    "price_per_call": 0.008,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /edgar-search/search"
+  },
+  "Email Reputation": {
+    "url": "abstract-email-reputation.mpp.paywithlocus.com",
+    "price_per_call": 0.006,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /abstract-email-reputation/check"
+  },
+  "Holidays": {
+    "url": "abstract-holidays.mpp.paywithlocus.com",
+    "price_per_call": 0.006,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /abstract-holidays/lookup"
+  },
+  "Exchange Rates": {
+    "url": "abstract-exchange-rates.mpp.paywithlocus.com",
+    "price_per_call": 0.006,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /abstract-exchange-rates/live"
+  },
+  "Grok": {
+    "url": "grok.mpp.paywithlocus.com",
+    "price_per_call": 0.070659,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /grok/chat"
+  },
+  "Groq": {
+    "url": "groq.mpp.paywithlocus.com",
+    "price_per_call": 0.008,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /groq/chat"
+  },
+  "Hunter": {
+    "url": "hunter.mpp.paywithlocus.com",
+    "price_per_call": 0.103,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /hunter/domain-search"
+  },
+  "IBAN Validation": {
+    "url": "abstract-iban-validation.mpp.paywithlocus.com",
+    "price_per_call": 0.006,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /abstract-iban-validation/validate"
+  },
+  "IPinfo": {
+    "url": "ipinfo.mpp.paywithlocus.com",
+    "price_per_call": 0.001,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /ipinfo/ip-lite"
+  },
+  "IP Intelligence": {
+    "url": "abstract-ip-intelligence.mpp.paywithlocus.com",
+    "price_per_call": 0.006,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /abstract-ip-intelligence/lookup"
+  },
+  "Mapbox": {
+    "url": "mapbox.mpp.paywithlocus.com",
+    "price_per_call": 0.00375,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /mapbox/geocode-forward"
+  },
+  "Judge0": {
+    "url": "judge0.mpp.paywithlocus.com",
+    "price_per_call": 0.006,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /judge0/execute-code"
+  },
+  "Mathpix": {
+    "url": "mathpix.mpp.paywithlocus.com",
+    "price_per_call": 0.005,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /mathpix/process-image"
+  },
+  "Phone Intelligence": {
+    "url": "abstract-phone-intelligence.mpp.paywithlocus.com",
+    "price_per_call": 0.006,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /abstract-phone-intelligence/lookup"
+  },
+  "Perplexity": {
+    "url": "perplexity.mpp.paywithlocus.com",
+    "price_per_call": 0.082159,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /perplexity/chat"
+  },
+  "Mistral AI": {
+    "url": "mistral.mpp.paywithlocus.com",
+    "price_per_call": 0.008686,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /mistral/chat"
+  },
+  "OpenWeather": {
+    "url": "openweather.mpp.paywithlocus.com",
+    "price_per_call": 0.006,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /openweather/current-weather"
+  },
+  "Replicate": {
+    "url": "replicate.mpp.paywithlocus.com",
+    "price_per_call": 0.053,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /replicate/run"
+  },
+  "ScreenshotOne": {
+    "url": "screenshotone.mpp.paywithlocus.com",
+    "price_per_call": 0.055,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /screenshotone/take"
+  },
+  "Stability AI": {
+    "url": "stability-ai.mpp.paywithlocus.com",
+    "price_per_call": 0.092,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /stability-ai/generate-ultra"
+  },
+  "VAT": {
+    "url": "abstract-vat.mpp.paywithlocus.com",
+    "price_per_call": 0.006,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /abstract-vat/validate"
+  },
+  "Timezone": {
+    "url": "abstract-timezone.mpp.paywithlocus.com",
+    "price_per_call": 0.006,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /abstract-timezone/current-time"
+  },
+  "Web Scraping": {
+    "url": "abstract-web-scraping.mpp.paywithlocus.com",
+    "price_per_call": 0.006,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /abstract-web-scraping/scrape"
+  },
+  "Tavily": {
+    "url": "tavily.mpp.paywithlocus.com",
+    "price_per_call": 0.09,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /tavily/search"
+  },
+  "Wolfram|Alpha": {
+    "url": "wolframalpha.mpp.paywithlocus.com",
+    "price_per_call": 0.055,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "POST /wolframalpha/short-answer"
+  },
+  "RentCast": {
+    "url": "rentcast.mpp.paywithlocus.com",
+    "price_per_call": null,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "failed"
+  },
+  "Suno": {
+    "url": "suno.mpp.paywithlocus.com",
+    "price_per_call": null,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "failed"
+  },
+  "Apollo": {
+    "url": "apollo.mpp.paywithlocus.com",
+    "price_per_call": null,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "failed"
+  },
+  "Alpha Vantage": {
+    "url": "alphavantage.mpp.paywithlocus.com",
+    "price_per_call": null,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "failed"
+  },
+  "DeepL": {
+    "url": "deepl.mpp.paywithlocus.com",
+    "price_per_call": null,
+    "probed_at": "2026-04-03T03:55:54.532Z",
+    "strategy": "failed"
+  }
+}

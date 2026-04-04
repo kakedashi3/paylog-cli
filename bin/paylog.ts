@@ -38,7 +38,7 @@ program
     }
     if (!wallet) {
       printError(
-        'No wallet found. Provide one via --wallet, or set up a Tempo/mppx/agentcash wallet.',
+        'No wallet found. Provide one via --wallet, or run: curl -fsSL https://tempo.xyz/install | bash',
       )
       process.exit(1)
     }
@@ -93,7 +93,7 @@ program
     }
     if (!wallet) {
       printError(
-        'No wallet found. Provide one via --wallet, or set up a Tempo/mppx/agentcash wallet.',
+        'No wallet found. Provide one via --wallet, or run: curl -fsSL https://tempo.xyz/install | bash',
       )
       process.exit(1)
     }
@@ -134,9 +134,9 @@ program
   .action((opts) => {
     const home = homedir()
     const sources = [
-      { path: join(home, '.agentcash', 'wallet.json'), label: '~/.agentcash/wallet.json' },
-      { path: join(home, '.mppx', 'wallet.json'),      label: '~/.mppx/wallet.json' },
       { path: join(home, '.tempo', 'wallet', 'keys.toml'), label: '~/.tempo/wallet/keys.toml' },
+      { path: join(home, '.agentcash', 'wallet.json'),     label: '~/.agentcash/wallet.json' },
+      { path: join(home, '.mppx', 'wallet.json'),          label: '~/.mppx/wallet.json' },
     ]
 
     if (opts.wallet) {
@@ -166,9 +166,10 @@ program
 
     printError(
       'No wallet found. Try:\n' +
+      '  Install Tempo:  curl -fsSL https://tempo.xyz/install | bash\n' +
+      '  ~/.tempo/wallet/keys.toml  wallet_address = "0x..."\n' +
       '  ~/.agentcash/wallet.json   { "address": "0x..." }\n' +
       '  ~/.mppx/wallet.json        { "address": "0x..." }\n' +
-      '  ~/.tempo/wallet/keys.toml  wallet_address = "0x..."\n' +
       '  paylog wallet --wallet 0x...',
     )
     process.exit(1)

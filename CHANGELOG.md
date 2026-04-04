@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1] - 2026-04-04
+
+- --enrich の精度向上：locus-pricing.json による金額ヒューリスティック追加
+- matchMethod フィールド追加（time / price / time+price）
+- 37サービスの単価データ同梱
+
 ## [0.2.0] - 2026-04-01
 
 ### Changed
@@ -11,7 +17,7 @@
   - `session_efficiency` — alerts when refund rate ≥30%, suggests lowering deposit amount
   - `other_spend` — alerts when unresolved addresses exceed 5% of spend, suggests `resolve=true`
   - `high_frequency` — detects services called 100+ times and suggests client-side caching
-  - `usage_pattern` (daily) — detects burst usage and idle periods from daily breakdown data
+  - `usage_pattern` (daily) — detects burst usage and idle periods from daily breaking data
 - **RPC reliability**: Tempo RPC calls now retry up to 3 times with exponential backoff (500ms → 1s → 2s)
 
 ## [0.1.5] - 2026-03-28
