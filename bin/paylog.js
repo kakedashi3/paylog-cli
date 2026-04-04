@@ -14,7 +14,7 @@ const program = new commander_1.Command();
 program
     .name('paylog')
     .description('View your MPP spending history from paylog.dev')
-    .version('0.1.0');
+    .version('0.3.0');
 // ---------------------------------------------------------------------------
 // paylog report
 // ---------------------------------------------------------------------------
@@ -25,9 +25,61 @@ program
     .option('--from <date>', 'Start date (YYYY-MM-DD)')
     .option('--to <date>', 'End date (YYYY-MM-DD)')
     .option('--wallet <address>', 'Wallet address (overrides auto-detection)')
+    .option('--chain <chain>', 'Chain to query: tempo (default), base, or all', 'tempo')
+    .option('--private-key <key>', 'EVM private key for x402 payment (base/all chains). Falls back to EVM_PRIVATE_KEY env var.')
     .option('--enrich', 'Enrich Locus payments using local shell/Claude history', false)
     .action(async (opts) => {
-    // Resolve wallet
+    const chain = opts.chain;
+    if (chain !== 'tempo' && chain !== 'base' && chain !== 'all') {
+        (0, format_js_1.printError)('--chain must be "tempo", "base", or "all"');
+        process.exit(1);
+    }
+    // ---------------------------------------------------------------------------
+    // x402 path (base / all)
+    // ---------------------------------------------------------------------------
+    if (chain === 'base' || chain === 'all') {
+        // For x402, wallet is derived from private key; --wallet overrides the query address only
+        const privateKey = opts.privateKey ?? process.env.EVM_PRIVATE_KEY;
+        if (!privateKey) {
+            (0, format_js_1.printError)('x402 payment requires an EVM private key.\n' +
+                'Set EVM_PRIVATE_KEY or pass --private-key <key>.');
+            process.exit(1);
+        }
+        // Derive wallet address from private key (or use --wallet override for query address)
+        let queryWallet;
+        if (opts.wallet) {
+            if (!/^0x[0-9a-fA-F]{40}$/.test(opts.wallet)) {
+                (0, format_js_1.printError)(`Invalid wallet address: ${opts.wallet}`);
+                process.exit(1);
+            }
+            queryWallet = opts.wallet.toLowerCase();
+        }
+        else {
+            // Derive from private key
+            try {
+                const { privateKeyToAccount } = await import('viem/accounts');
+                const key = (privateKey.startsWith('0x') ? privateKey : `0x${privateKey}`);
+                queryWallet = privateKeyToAccount(key).address.toLowerCase();
+            }
+            catch (err) {
+                (0, format_js_1.printError)(`Invalid private key: ${err.message}`);
+                process.exit(1);
+            }
+        }
+        let report;
+        try {
+            report = await (0, api_js_1.fetchX402Report)(queryWallet, chain, privateKey);
+        }
+        catch (err) {
+            (0, format_js_1.printError)(err.message);
+            process.exit(1);
+        }
+        (0, format_js_1.printX402Report)(report);
+        return;
+    }
+    // ---------------------------------------------------------------------------
+    // Tempo path (default)
+    // ---------------------------------------------------------------------------
     let wallet;
     try {
         wallet = (0, wallet_js_1.resolveWallet)(opts.wallet);

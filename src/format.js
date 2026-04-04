@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.printReport = printReport;
+exports.printX402Report = printX402Report;
 exports.printInsights = printInsights;
 exports.printWallet = printWallet;
 exports.printError = printError;
@@ -79,6 +80,60 @@ function printEnrichBreakdown(enrich) {
         console.log(dim(`      │ ? 未照合              ${usd(enrich.unmatched_usd).padStart(8)}  ${enrich.unmatched_txns}件`));
     }
     console.log(dim(`      └─ ※ ローカル履歴との照合による推定 ──────────────`));
+}
+// ---------------------------------------------------------------------------
+// x402 Report display (Base / all)
+// ---------------------------------------------------------------------------
+function printServiceTable(by_service, other) {
+    if (by_service.length > 0) {
+        const maxName = Math.max(...by_service.map(s => s.name.length), 10);
+        for (const svc of by_service) {
+            const namePad = svc.name.padEnd(maxName + 2);
+            console.log(`  ${cyan(namePad)}${usd(svc.spent).padStart(10)}  ${dim(`${svc.txns} txns`)}`);
+        }
+    }
+    if (other && other.txns > 0) {
+        console.log(`  ${'Other'.padEnd(20)}${usd(other.total_usd).padStart(10)}  ${dim(`${other.txns} txns`)}`);
+    }
+}
+function printX402Report(report) {
+    console.log();
+    if (report.chain === 'base') {
+        const r = report;
+        console.log(bold('x402 Spending Report  ') + dim('(Base)'));
+        console.log(dim(`Wallet: ${r.wallet}`));
+        console.log();
+        console.log(`${bold('Total spent')}     ${bold(usd(r.total_spent_usd))}`);
+        console.log();
+        console.log(bold('By service:'));
+        printServiceTable(r.by_service, r.other);
+        console.log();
+    }
+    else {
+        const r = report;
+        console.log(bold('x402 Spending Report  ') + dim('(MPP + Base combined)'));
+        console.log(dim(`Wallet: ${r.wallet}`));
+        console.log();
+        console.log(`${bold('Total spent')}     ${bold(usd(r.total_spent_usd))}`);
+        console.log(dim(`  Tempo (MPP)  ${usd(r.tempo.total_spent_usd).padStart(8)}`));
+        console.log(dim(`  Base  (x402) ${usd(r.base.total_spent_usd).padStart(8)}`));
+        console.log();
+        console.log(bold('By service (combined):'));
+        printServiceTable(r.by_service);
+        console.log();
+        if (r.tempo.session_deposits?.txns > 0) {
+            const sd = r.tempo.session_deposits;
+            console.log(dim(`  Session deposits (Tempo)  ${usd(sd.deposited_usd).padStart(8)}  (${sd.txns} txns — ${sd.note})`));
+        }
+        if (r.tempo.network_fees?.txns > 0) {
+            const nf = r.tempo.network_fees;
+            console.log(dim(`  Network fees     (Tempo)  ${usd(nf.total_usd).padStart(8)}  (${nf.txns} txns)`));
+        }
+        if (r.base.other?.txns > 0) {
+            console.log(dim(`  Other            (Base)   ${usd(r.base.other.total_usd).padStart(8)}  (${r.base.other.txns} txns)`));
+        }
+        console.log();
+    }
 }
 // ---------------------------------------------------------------------------
 // Insights display

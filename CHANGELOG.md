@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0] - 2026-04-04
+
+### Added
+- `--chain` option for `paylog report`: `tempo` (default), `base`, `all`
+- `--chain base` / `--chain all` use x402 payment (EIP-3009 / Base mainnet) instead of MPP
+- `--private-key` option and `EVM_PRIVATE_KEY` env var for x402 signing
+- `chain=all` returns a combined Tempo MPP + Base x402 report in one call
+
+### Dependencies
+- Added `@x402/core`, `@x402/evm`, `@x402/fetch`, `viem` for x402 support
+
 ## [0.2.1] - 2026-04-04
 
 - --enrich の精度向上：locus-pricing.json による金額ヒューリスティック追加

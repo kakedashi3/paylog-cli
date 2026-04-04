@@ -1,6 +1,6 @@
 {
   "name": "@kakedashi/paylog",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "CLI tool to view your MPP spending history powered by paylog.dev",
   "bin": {
     "paylog": "./bin/paylog.js"
@@ -17,6 +17,8 @@
   "keywords": [
     "mpp",
     "tempo",
+    "x402",
+    "base",
     "usdc",
     "payments",
     "cli"
@@ -24,7 +26,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "commander": "^12.1.0"
+    "@x402/core": "^2.9.0",
+    "@x402/evm": "^2.9.0",
+    "@x402/fetch": "^2.9.0",
+    "commander": "^12.1.0",
+    "viem": "^2.47.6"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
